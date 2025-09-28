@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>App de Afiliados — Mock de Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body class="min-h-screen bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      const MOCK_ITEMS = [
+        {
+          id: "MLB-123",
+          plataforma: "Mercado Livre",
+          produto: "Fone Bluetooth XYZ",
+          preco_atual: 99.9,
+          preco_anterior: 149.9,
+          desconto_percentual: 33,
+          imagem: "https://via.placeholder.com/160x160.png?text=Imagem",
+          url_produto: "https://mercadolivre.com.br/item/MLB-123",
+          url_afiliado: "(preencher depois)",
+          categoria: "Tecnologia & Eletrônicos",
+          status: "ativo",
+          data_atualizacao: "27/09/2025",
+        },
+        {
+          id: "SHP-456",
+          plataforma: "Shopee",
+          produto: "Liquidificador Turbo 1200W",
+          preco_atual: 229.9,
+          preco_anterior: 329.9,
+          desconto_percentual: 30,
+          imagem: "https://via.placeholder.com/160x160.png?text=Imagem",
+          url_produto: "https://shopee.com.br/item/SHP-456",
+          url_afiliado: "(preencher depois)",
+          categoria: "Casa & Decoração",
+          status: "ativo",
+          data_atualizacao: "27/09/2025",
+        },
+        {
+          id: "AMZ-789",
+          plataforma: "Amazon",
+          produto: "Tênis Esportivo Confort",
+          preco_atual: 179.9,
+          preco_anterior: 249.9,
+          desconto_percentual: 28,
+          imagem: "https://via.placeholder.com/160x160.png?text=Imagem",
+          url_produto: "https://amazon.com.br/dp/AMZ-789",
+          url_afiliado: "(preencher depois)",
+          categoria: "Moda & Acessórios",
+          status: "ativo",
+          data_atualizacao: "27/09/2025",
+        },
+      ];
+
+      function AppMock() {
+        const [listaURL, setListaURL] = useState("");
+        const [arquivo, setArquivo] = useState(null);
+        const [itens, setItens] = useState([]);
+        const [log, setLog] = useState([]);
+        const [planilhaID, setPlanilhaID] = useState("");
+        const [abaNome, setAbaNome] = useState("Produtos");
+        const [agendar, setAgendar] = useState(false);
+        const [rodando, setRodando] = useState(false);
+
+        const addLog = (msg) =>
+          setLog((logs) => [
+            `${new Date().toLocaleTimeString()} — ${msg}`,
+            ...logs,
+          ]);
+
+        const simulateExport = () => {
+          addLog(`Exportando para Google Sheets (ID=${planilhaID}, aba=${abaNome})...`);
+          setTimeout(() => {
+            addLog("Exportação concluída com sucesso.");
+            setRodando(false);
+          }, 800);
+        };
+
+        const handleRodar = () => {
+          setRodando(true);
+          addLog("Iniciando processamento...");
+
+          setTimeout(() => {
+            if (listaURL.trim()) {
+              addLog("Link de lista detectado. Iniciando varredura (scroll/paginação)...");
+              setTimeout(() => {
+                addLog("Coleta concluída na listagem. Extraindo produtos individuais...");
+                setItens(MOCK_ITEMS);
+                addLog(`${MOCK_ITEMS.length} produtos extraídos e normalizados.`);
+                if (planilhaID) {
+                  simulateExport();
+                } else {
+                  addLog("Pré-visualização pronta. Configure o ID da planilha para exportar.");
+                  setRodando(false);
+                }
+              }, 900);
+            } else if (arquivo) {
+              addLog(`Arquivo '${arquivo.name}' recebido. Lendo cabeçalhos e mapeando campos...`);
+              setTimeout(() => {
+                setItens(MOCK_ITEMS);
+                addLog("Conversão concluída para o layout padrão.");
+                if (planilhaID) {
+                  simulateExport();
+                } else {
+                  addLog("Pré-visualização pronta. Configure o ID da planilha para exportar.");
+                  setRodando(false);
+                }
+              }, 900);
+            } else {
+              addLog("Nenhuma entrada fornecida. Cole um link de lista ou envie um CSV/XLSX.");
+              setRodando(false);
+            }
+          }, 700);
+        };
+
+        const handleClear = () => {
+          setListaURL("");
+          setArquivo(null);
+          setItens([]);
+          setLog([]);
+          setPlanilhaID("");
+          setAbaNome("Produtos");
+          setAgendar(false);
+        };
+
+        return (
+          <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
+            <div className="max-w-6xl mx-auto">
+              <header className="mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold">App de Afiliados — Mock de Interface</h1>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Cole um link de lista (Mercado Livre, Shopee, Amazon) <span className="mx-1">ou</span> envie um CSV/XLSX exportado.
+                    Em seguida, visualize o preview e (opcionalmente) exporte para o Google Sheets.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleRodar}
+                    disabled={rodando}
+                    className="px-4 py-2 rounded-2xl bg-black text-white shadow hover:opacity-90 disabled:opacity-40"
+                  >
+                    {rodando ? "Processando..." : "Rodar processamento"}
+                  </button>
+                  <button
+                    onClick={handleClear}
+                    className="px-4 py-2 rounded-2xl bg-white border shadow-sm hover:bg-gray-100"
+                  >
+                    Limpar
+                  </button>
+                </div>
+              </header>
+
+              <div className="grid md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-white rounded-2xl shadow p-4">
+                  <h2 className="font-semibold mb-2">Entrada — Link de lista</h2>
+                  <input
+                    type="url"
+                    placeholder="https://... (lista de produtos)"
+                    className="w-full border rounded-xl px-3 py-2 mb-3 focus:outline-none focus:ring"
+                    value={listaURL}
+                    onChange={(event) => setListaURL(event.target.value)}
+                  />
+                  <p className="text-xs text-gray-600">
+                    Suporta páginas de resultado / coleção com paginação ou rolagem infinita.
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow p-4">
+                  <h2 className="font-semibold mb-2">Entrada — Upload de planilha</h2>
+                  <input
+                    type="file"
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    onChange={(event) => setArquivo(event.target.files?.[0] ?? null)}
+                    className="w-full text-sm"
+                  />
+                  {arquivo && (
+                    <p className="text-xs text-gray-700 mt-2">
+                      Selecionado: <span className="font-medium">{arquivo.name}</span>
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-600 mt-2">
+                    Use os exports oficiais de Shopee, Mercado Livre e Amazon.
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow p-4">
+                  <h2 className="font-semibold mb-2">Destino — Google Sheets</h2>
+                  <input
+                    type="text"
+                    placeholder="ID da planilha (Google Sheets)"
+                    className="w-full border rounded-xl px-3 py-2 mb-2 focus:outline-none focus:ring"
+                    value={planilhaID}
+                    onChange={(event) => setPlanilhaID(event.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Nome da aba (ex.: Produtos)"
+                    className="w-full border rounded-xl px-3 py-2 mb-2 focus:outline-none focus:ring"
+                    value={abaNome}
+                    onChange={(event) => setAbaNome(event.target.value)}
+                  />
+                  <label className="flex items-center gap-2 text-sm select-none">
+                    <input
+                      type="checkbox"
+                      checked={agendar}
+                      onChange={(event) => setAgendar(event.target.checked)}
+                    />
+                    Agendar atualização diária às 9h
+                  </label>
+                </div>
+              </div>
+
+              <section className="bg-white rounded-2xl shadow p-4 mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-semibold">Pré-visualização (5 primeiros)</h2>
+                  <span className="text-xs text-gray-500">
+                    {itens.length ? `${itens.length} itens processados` : "nenhum item"}
+                  </span>
+                </div>
+                {itens.length === 0 ? (
+                  <p className="text-sm text-gray-600">
+                    Sem dados ainda. Cole um link ou envie um arquivo e clique em <span className="font-medium">Rodar processamento</span>.
+                  </p>
+                ) : (
+                  <div className="grid md:grid-cols-3 gap-3">
+                    {itens.slice(0, 5).map((item) => (
+                      <div key={item.id} className="border rounded-xl p-3 flex gap-3">
+                        <img
+                          src={item.imagem}
+                          alt={item.produto}
+                          className="w-24 h-24 object-cover rounded-lg"
+                        />
+                        <div className="text-sm">
+                          <div className="font-medium line-clamp-2">{item.produto}</div>
+                          <div className="mt-1">
+                            R$ {item.preco_atual.toFixed(2).replace(".", ",")}
+                            {item.preco_anterior ? (
+                              <span className="text-gray-400 line-through ml-1">
+                                R$ {item.preco_anterior.toFixed(2).replace(".", ",")}
+                              </span>
+                            ) : null}
+                          </div>
+                          {item.desconto_percentual > 0 && (
+                            <div className="text-green-600">-{item.desconto_percentual}%</div>
+                          )}
+                          <a
+                            className="text-blue-600 hover:underline"
+                            href={item.url_produto}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Ver produto
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              <section className="bg-white rounded-2xl shadow p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-semibold">Logs</h2>
+                  <button
+                    onClick={() => setLog([])}
+                    className="text-xs text-gray-600 hover:underline"
+                  >
+                    limpar
+                  </button>
+                </div>
+                {log.length === 0 ? (
+                  <p className="text-sm text-gray-600">Sem logs ainda.</p>
+                ) : (
+                  <ul className="space-y-1 text-sm">
+                    {log.map((entry, index) => (
+                      <li
+                        key={`${entry}-${index}`}
+                        className="font-mono text-xs bg-gray-50 border rounded-lg p-2"
+                      >
+                        {entry}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              <footer className="text-xs text-gray-500 mt-6 text-center">
+                Mock de interface para validação visual — os botões simulam o comportamento real.
+              </footer>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<AppMock />);
+    </script>
+  </body>
+</html>
