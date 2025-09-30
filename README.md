@@ -30,4 +30,4 @@ npm run preview
 
 - Rotas de API para scraping real
 - Integração com Google Sheets
-- Conversão para a planilha padrão que o Canva vai consumir
+- Conversão para a planilha padrão que o Canva vai consumir.
